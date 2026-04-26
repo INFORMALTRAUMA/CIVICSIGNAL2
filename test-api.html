@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Testing API Endpoint</h1>
+    <button onclick="testAPI()">Test Duplicates API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/issues/duplicates?lat=17.415252&lng=78.50176&query=test%205%20test%205%20just%20for%20demo&radius=300&threshold=0.2');
+                const text = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <h3>Status: ${response.status}</h3>
+                    <h3>Response:</h3>
+                    <pre>${text}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<h3>Error:</h3><pre>${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>

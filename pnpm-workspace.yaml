@@ -1,0 +1,6 @@
+packages:
+  - .
+  - mobile
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

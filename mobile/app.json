@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Civic Signal",
+    "slug": "civic-signal-mobile",
+    "scheme": "civicsignal",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "platforms": ["ios", "android", "web"],
+    "splash": {
+      "backgroundColor": "#f4f5f7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.civicsignal.mobile"
+    },
+    "android": {
+      "package": "com.civicsignal.mobile",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-image-picker"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
