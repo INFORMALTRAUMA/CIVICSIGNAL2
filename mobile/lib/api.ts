@@ -212,7 +212,14 @@ export async function createIssue(input: {
   })
   const payload = await response.json().catch(() => null)
   if (!response.ok) {
-    throw new Error(payload?.error ?? "Failed to submit signal")
+    const details = payload?.details
+    const detailStr =
+      details && typeof details === "object"
+        ? ` ${JSON.stringify(details)}`
+        : details
+          ? ` ${String(details)}`
+          : ""
+    throw new Error((payload?.error ?? "Failed to submit signal") + detailStr)
   }
   return payload?.data as Issue
 }

@@ -159,6 +159,17 @@ export default function ReportScreen() {
       Alert.alert("Missing fields", "Title, description and coordinates are required.")
       return
     }
+    if (title.trim().length < 3) {
+      Alert.alert("Title too short", "Use at least 3 characters for the title.")
+      return
+    }
+    if (description.trim().length < 10) {
+      Alert.alert(
+        "Description too short",
+        "Use at least 10 characters so responders have enough context (server requirement)."
+      )
+      return
+    }
 
     Keyboard.dismiss()
     setSubmitting(true)

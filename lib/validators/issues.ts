@@ -6,11 +6,11 @@ export const issuePrioritySchema = z.enum(["low", "medium", "high", "critical"])
 export const createIssueSchema = z.object({
   title: z.string().min(3).max(140),
   description: z.string().min(10).max(2000),
-  lat: z.number().finite(),
-  lng: z.number().finite(),
+  lat: z.coerce.number().finite(),
+  lng: z.coerce.number().finite(),
   address: z.string().max(255).optional().nullable(),
   wardId: z.string().uuid().optional().nullable(),
-  severity: z.number().int().min(1).max(5).optional(),
+  severity: z.coerce.number().int().min(1).max(5).optional(),
   createdBy: z.string().min(1)
 })
 
