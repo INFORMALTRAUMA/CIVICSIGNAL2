@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs/server"
 
 export type UserRole = "citizen" | "official"
 
-export function getUserRole(): UserRole | null {
-  const session = auth()
+export async function getUserRole(): Promise<UserRole | null> {
+  const session = await auth()
   const claims = session.sessionClaims as Record<string, unknown> | null
   if (!claims) return null
 
@@ -18,6 +18,6 @@ export function getUserRole(): UserRole | null {
   return null
 }
 
-export function isOfficial(): boolean {
-  return getUserRole() === "official"
+export async function isOfficial(): Promise<boolean> {
+  return (await getUserRole()) === "official"
 }

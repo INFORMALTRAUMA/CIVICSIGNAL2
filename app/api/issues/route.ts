@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { listIssues, listIssuesWithinRadius, createIssue } from "@/lib/db/issues"
+import { getAuthenticatedUserId } from "@/lib/server/api-auth"
 import { createIssueSchema, listIssuesQuerySchema } from "@/lib/validators/issues"
 
 export async function GET(request: Request) {
@@ -24,11 +25,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const authedUserId = await getAuthenticatedUserId(request)
+  if (!authedUserId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
   const body = await request.json().catch(() => null)
   const parsed = createIssueSchema.safeParse(body)
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid payload", details: parsed.error.flatten() }, { status: 400 })
+  }
+
+  if (parsed.data.createdBy !== authedUserId) {
+    return NextResponse.json({ error: "createdBy must match the signed-in user" }, { status: 403 })
   }
 
   try {

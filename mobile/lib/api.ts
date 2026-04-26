@@ -1,5 +1,6 @@
 import { Platform } from "react-native"
 import { API_BASE_URL } from "@/lib/config"
+import { supabase } from "@/lib/supabase"
 
 export type Issue = {
   id: string
@@ -39,9 +40,28 @@ const networkHint = (attemptedUrl: string) => {
   return `Could not reach:\n${attemptedUrl}${deviceNote}`
 }
 
+async function sessionAuthHeaders(): Promise<HeadersInit> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) return {}
+  return { Authorization: `Bearer ${token}` }
+}
+
+function mergeRequestHeaders(base: HeadersInit, extra?: HeadersInit): Headers {
+  const out = new Headers(base)
+  if (extra) {
+    new Headers(extra).forEach((value, key) => {
+      out.set(key, value)
+    })
+  }
+  return out
+}
+
 async function apiFetch(url: string, init?: RequestInit): Promise<Response> {
+  const auth = await sessionAuthHeaders()
+  const headers = mergeRequestHeaders(init?.headers ?? {}, auth)
   try {
-    return await fetch(url, init)
+    return await fetch(url, { ...init, headers })
   } catch {
     throw new Error(networkHint(url))
   }

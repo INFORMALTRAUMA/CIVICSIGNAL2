@@ -165,7 +165,7 @@ export async function listIssuesAdminSummary(params: {
 
   const { data, error } = await query
   if (error) throw error
-  const rows = (data ?? []) as IssueSummaryRow[]
+  const rows = (data ?? []) as unknown as IssueSummaryRow[]
   return rows.map((row) => {
     const { issue_resolutions: res, ...rest } = row
     return {

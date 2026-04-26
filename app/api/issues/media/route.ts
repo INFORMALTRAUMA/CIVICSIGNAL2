@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server"
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import { getAuthenticatedUserId } from "@/lib/server/api-auth"
 
 export async function POST(request: Request) {
+  const authedUserId = await getAuthenticatedUserId(request)
+  if (!authedUserId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
   const formData = await request.formData()
   const issueId = (formData as any).get("issueId") as string | null
   const file = (formData as any).get("file") as File | null
@@ -10,6 +16,10 @@ export async function POST(request: Request) {
 
   if (typeof issueId !== "string" || !(file instanceof File) || typeof userId !== "string") {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
+  }
+
+  if (userId !== authedUserId) {
+    return NextResponse.json({ error: "userId must match the signed-in user" }, { status: 403 })
   }
 
   const bucket = "issue-media"

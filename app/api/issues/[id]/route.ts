@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { getIssue, updateIssue, addUpvote, addReport, getReportedIssueIdsForUser, getUpvotedIssueIdsForUser } from "@/lib/db/issues"
+import { getAuthenticatedUserId } from "@/lib/server/api-auth"
+import { requireOfficialUser } from "@/lib/server/clerk-official"
 import { updateIssueSchema } from "@/lib/validators/issues"
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -27,6 +29,11 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 }
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const official = await requireOfficialUser()
+  if (official instanceof NextResponse) {
+    return official
+  }
+
   const { id } = await context.params
   const body = await request.json().catch(() => null)
   const parsed = updateIssueSchema.safeParse(body)
@@ -44,6 +51,11 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 }
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
+  const authedUserId = await getAuthenticatedUserId(request)
+  if (!authedUserId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
   const { id } = await context.params
   const body = await request.json().catch(() => null)
 
@@ -52,6 +64,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   }
 
   if (body.action === "upvote" && typeof body.userId === "string") {
+    if (body.userId !== authedUserId) {
+      return NextResponse.json({ error: "userId must match the signed-in user" }, { status: 403 })
+    }
     try {
       const { created } = await addUpvote(id, body.userId)
       return NextResponse.json({ ok: true, created })
@@ -61,6 +76,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   }
 
   if (body.action === "report" && typeof body.userId === "string") {
+    if (body.userId !== authedUserId) {
+      return NextResponse.json({ error: "userId must match the signed-in user" }, { status: 403 })
+    }
     try {
       const { created } = await addReport(id, body.userId, typeof body.note === "string" ? body.note : undefined)
       return NextResponse.json({ ok: true, created })

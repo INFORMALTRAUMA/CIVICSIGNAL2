@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 
 export async function GET() {
+  if (process.env.VERCEL_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ ok: false, error: "Not signed in" }, { status: 401 })

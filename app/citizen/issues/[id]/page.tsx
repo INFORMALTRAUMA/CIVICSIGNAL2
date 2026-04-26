@@ -16,7 +16,7 @@ const panelTitle = "text-[0.62rem] font-semibold uppercase tracking-[0.14em] tex
 const panelBody = "p-4"
 
 export default async function IssueDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { userId } = auth()
+  const { userId } = await auth()
   const { id } = await params
   const { issue, history, media, resolution } = await getIssueWithHistory(id)
   const [viewerUpvotes, viewerReports] = userId

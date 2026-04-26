@@ -1,9 +1,9 @@
 import { clerkMiddleware } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
-export default clerkMiddleware((auth, request) => {
+export default clerkMiddleware(async (auth, request) => {
   const { pathname } = request.nextUrl
-  const { userId } = auth()
+  const { userId } = await auth()
 
   if (pathname.startsWith("/sign-in") && userId) {
     const redirectParam = request.nextUrl.searchParams.get("redirect_url")

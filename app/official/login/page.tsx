@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 
 type AuthMode = "signin" | "signup"
 
-export default function OfficialLoginPage() {
+function OfficialLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = useMemo(() => createSupabaseBrowserClient(), [])
@@ -147,5 +147,19 @@ export default function OfficialLoginPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function OfficialLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="relative flex min-h-screen items-center justify-center bg-[var(--sand)] px-4 text-sm text-ink-soft">
+          Loading…
+        </main>
+      }
+    >
+      <OfficialLoginForm />
+    </Suspense>
   )
 }
